@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAGIUS Mindful Athlete</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Helvetica, Arial, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(180deg, #1e3e6a 0%, #b38267 100%);
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .app-container {
+      max-width: 400px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .status-bar-left {
+      display: flex;
+      align-items: center;
+    }
+    
+    .status-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+    
+    .header h1 {
+      font-size: 60px;
+      letter-spacing: 2px;
+      font-weight: normal;
+    }
+    
+    .back-button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 15px 30px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 130px;
+      text-align: center;
+    }
+    
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 0 20px;
+      position: relative;
+    }
+    
+    .breathing-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .breath-circle {
+      width: 280px;
+      height: 280px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: bold;
+      position: relative;
+      animation: breatheAnimation 8s infinite ease-in-out;
+      margin-top: 50px;
+    }
+    
+    @keyframes breatheAnimation {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      width: 100%;
+      padding: 0 5px;
+    }
+    
+    .button-grid button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 15px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    
+    .full-width-button {
+      grid-column: span 2;
+    }
+    
+    .timer {
+      text-align: center;
+      font-size: 20px;
+      padding: 15px 0;
+    }
+    
+    .control-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      width: 100%;
+      padding: 0 5px;
+    }
+    
+    .control-buttons button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 15px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    
+    .breathing-info {
+      padding: 20px;
+      overflow-y: auto;
+      height: calc(100% - 60px);
+    }
+    
+    .breathing-info h2 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    
+    .breathing-info p {
+      font-size: 18px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    
+    .breathing-info h3 {
+      font-size: 30px;
+      margin: 30px 0 20px;
+    }
+    
+    .breathing-info ul {
+      margin-left: 20px;
+    }
+    
+    .breathing-info li {
+      font-size: 18px;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+    
+    .exercise-screen {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .exercise-image {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: #f0f0f0;
+    }
+    
+    .exercise-title {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    
+    .exercise-description {
+      font-size: 18px;
+      text-align: center;
+      color: white;
+      max-width: 300px;
+      margin-bottom: 80px;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    
+    .exercise-timer {
+      position: absolute;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .focus-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+    }
+    
+    .focus-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 200px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    /* Navigation for different screens */
+    #home-screen, #breathing-info-screen, #breathing-exercise-screen, #physical-exercise-screen, 
+    #focus-screen, #main-dashboard, #protocols-screen, #assessment-screen, #learning-center,
+    #community-screen, #profile-screen, #morning-protocol-screen, #evening-protocol-screen {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    
+    /* Dashboard styles */
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 0 15px;
+    }
+    
+    .greeting {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+    
+    .progress-summary {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      margin: 10px 0;
+    }
+    
+    .progress-summary h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    
+    .progress-bars {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+    }
+    
+    .progress-bar {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      flex: 1;
+      margin: 0 2px;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      background: white;
+      width: 0%;
+    }
+    
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .action-button {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100px;
+      cursor: pointer;
+    }
+    
+    .action-button span {
+      display: block;
+      margin-top: 10px;
+    }
+    
+    .today-plan {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      margin: 10px 0;
+    }
+    
+    .today-plan h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    
+    .plan-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .plan-item:last-child {
+      border-bottom: none;
+    }
+    
+    .plan-time {
+      opacity: 0.7;
+    }
+    
+    /* Navigation menu */
+    .nav-menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    
+    .nav-button {
+      color: white;
+      background: none;
+      border: none;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .nav-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    /* Protocol screens */
+    .protocol-header {
+      padding: 15px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .protocol-list {
+      padding: 0 15px;
+    }
+    
+    .protocol-item {
+      background: rgba(255, 255, 255, 0.15);
+      margin-bottom: 15px;
+      padding: 15px;
+    }
+    
+    .protocol-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .protocol-name {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .protocol-duration {
+      opacity: 0.7;
+    }
+    
+    .protocol-description {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+    
+    .start-protocol-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 10px;
+      color: white;
+      width: 100%;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    /* Assessment screen */
+    .assessment-container {
+      padding: 15px;
+    }
+    
+    .assessment-title {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    
+    .assessment-form {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    
+    .form-group select, .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 16px;
+    }
+    
+    .slider-container {
+      padding: 10px 0;
+    }
+    
+    .slider {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+    
+    .submit-assessment {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 15px;
+      color: white;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    /* Learning center */
+    .learning-container {
+      padding: 15px;
+    }
+    
+    .learning-title {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    
+    .learning-categories {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .learning-category {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    .learning-category-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .learning-category-count {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .featured-module {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .featured-module-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .featured-module-description {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+    
+    .start-module-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 10px;
+      color: white;
+      width: 100%;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    /* Community screen */
+    .community-container {
+      padding: 15px;
+    }
+    
+    .community-title {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    
+    .community-tabs {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    
+    .community-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    
+    .community-tab.active {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .community-feed {
+      margin-bottom: 20px;
+    }
+    
+    .post {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .post-header {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.3);
+      margin-right: 10px;
+    }
+    
+    .post-user-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .post-username {
+      font-weight: bold;
+    }
+    
+    .post-time {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+    
+    .post-content {
+      margin-bottom: 10px;
+    }
+    
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .post-action {
+      font-size: 14px;
+      opacity: 0.7;
+      cursor: pointer;
+    }
+    
+    /* Profile screen */
+    .profile-container {
+      padding: 15px;
+    }
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.3);
+      margin-right: 20px;
+    }
+    
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .profile-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .profile-membership {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .profile-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+    
+    .profile-stat {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .profile-section {
+      margin-bottom: 30px;
+    }
+    
+    .profile-section-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      margin-bottom: 10px;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .settings-item-label {
+      font-size: 16px;
+    }
+    
+    .settings-item-value {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="status-bar-left">13:53</div>
+      <div class="status-bar-right">
+        <span>•••</span>
+        <span>Wi-Fi</span>
+        <span>🔋</span>
+      </div>
+    </div>
+    
+    <!-- Header -->
+    <div class="header">
+      <h1>HAGIUS</h1>
+    </div>
+    
+    <!-- Content Area -->
+    <div class="content">
+      
+      <!-- Main Dashboard -->
+      <div id="main-dashboard">
+        <div class="dashboard-container">
+          <div class="greeting">Good afternoon, Alex</div>
+          
+          <div class="progress-summary">
+            <h3>Weekly Progress</h3>
+            <div class="progress-bars">
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 100%"></div></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 100%"></div></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 85%"></div></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 85%"></div></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 60%"></div></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%"></div></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%"></div></div>
+            </div>
+            <div>4 of 7 days complete</div>
+          </div>
+          
+          <div class="quick-actions">
+            <button class="action-button" onclick="showScreen('breathing-exercise-screen', 'resonance')">
+              <div>🧘</div>
+              <span>Breathwork</span>
+            </button>
+            <button class="action-button" onclick="showScreen('morning-protocol-screen')">
+              <div>🌅</div>
+              <span>Morning Protocol</span>
+            </button>
+            <button class="action-button" onclick="showScreen('evening-protocol-screen')">
+              <div>🌙</div>
+              <span>Evening Protocol</span>
+            </button>
+            <button class="action-button" onclick="showScreen('focus-screen')">
+              <div>⏱️</div>
+              <span>Focus Timer</span>
+            </button>
+          </div>
+          
+          <div class="today-plan">
+            <h3>Today's Plan</h3>
+            <div class="plan-item">
+              <div>Morning Protocol</div>
+              <div class="plan-time">7:00 AM</div>
+            </div>
+            <div class="plan-item">
+              <div>Breathwork</div>
+              <div class="plan-time">12:30 PM</div>
+            </div>
+            <div class="plan-item">
+              <div>Evening Protocol</div>
+              <div class="plan-time">9:00 PM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Home Screen (Breathing Techniques) -->
+      <div id="home-screen" class="hidden">
+        <div class="button-grid">
+          <button onclick="showScreen('breathing-info-screen')">Basics</button>
+          <button onclick="showScreen('breathing-exercise-screen', 'resonance')">Resonance</button>
+          <button onclick="showScreen('breathing-exercise-screen', '478')">4-7-8</button>
+          <button onclick="showScreen('breathing-exercise-screen', 'box')">Box</button>
+          <button onclick="showScreen('breathing-exercise-screen', 'sighing')">Sighing</button>
+        </div>
+      </div>
+      
+      <!-- Breathing Info Screen -->
+      <div id="breathing-info-screen" class="hidden">
+        <button class="back-button" onclick="showScreen('home-screen')">BACK</button>
+        
+        <div class="breathing-info">
+          <h2>Breathing Basics</h2>
+          
+          <p>Conscious breathing is one of the most powerful tools we have for managing stress, improving focus, and enhancing overall well-being. Understanding how breathing affects your mind and body is the first step in harnessing its potential.</p>
+          
+          <h3>The Science of Breathing</h3>
+          
+          <p>Your breath is the bridge between your conscious and unconscious processes. When you breathe, you activate your autonomic nervous system, which has two branches:</p>
+          
+          <ul>
+            <li>Sympathetic Nervous System - Your "fight or flight" response, activated by short, shallow breathing</li>
+            <li>Parasympathetic Nervous System - Your "rest and digest" response, activated by slow, deep breathing</li>
+          </ul>
+          
+          <h3>Benefits of Breathwork</h3>
+          
+          <p>Regular practice of conscious breathing techniques can:</p>
+          
+          <ul>
+            <li>Reduce stress and anxiety</li>
+            <li>Improve focus and concentration</li>
+            <li>Enhance recovery between training sessions</li>
+            <li>Improve sleep quality</li>
+            <li>Increase emotional regulation</li>
+            <li>Optimize athletic performance</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Breathing Exercise Screen -->
+      <div id="breathing-exercise-screen" class="hidden">
+        <div class="breathing-screen">
+          <div class="breath-circle">
+            <span id="breath-instruction">INHALE</span>
+          </div>
+          
+          <div class="button-grid">
+            <button onclick="changeBreathingTechnique('resonance')">Resonance</button>
+            <button onclick="changeBreathingTechnique('478')">4-7-8</button>
+            <button onclick="changeBreathingTechnique('box')">Box</button>
+            <button onclick="changeBreathingTechnique('sighing')">Sighing</button>
+            <button class="full-width-button" onclick="showScreen('breathing-info-screen')">Learn More</button>
+          </div>
+          
+          <div class="timer" id="breath-timer">4:35</div>
+          
+          <div class="control-buttons">
+            <button onclick="toggleTechniqueFocus()">TECHNIQUE</button>
+            <button onclick="showScreen('main-dashboard')">EXIT FOCUS</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Morning Protocol Screen -->
+      <div id="morning-protocol-screen" class="hidden">
+        <button class="back-button" onclick="showScreen('main-dashboard')">BACK</button>
+        
+        <div class="protocol-header">Morning Protocol</div>
+        
+        <div class="protocol-list">
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Foundation Reset</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Establish proper alignment, reset joint function, and prime your neuromuscular system for the day ahead.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+          
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Flow & Connect</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Dynamic movement patterns that establish mind-body connection and improve circulation and mobility.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+          
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Balance & Stability</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Challenge your balance system and develop greater proprioception and stability.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+          
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Fascial Vitality</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Awaken and hydrate your connective tissue network for better movement quality.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Evening Protocol Screen -->
+      <div id="evening-protocol-screen" class="hidden">
+        <button class="back-button" onclick="showScreen('main-dashboard')">BACK</button>
+        
+        <div class="protocol-header">Evening Protocol</div>
+        
+        <div class="protocol-list">
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Tension Release</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Release accumulated tension from the day and prepare your body for restful sleep.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+          
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Flowing Unwinding</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Gentle flowing movements to release tension patterns and improve evening recovery.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+          
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Deep Tissue Release</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Self-massage techniques to release deeper muscle tension and fascial restrictions.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+          
+          <div class="protocol-item">
+            <div class="protocol-item-header">
+              <div class="protocol-name">Nervous System Soother</div>
+              <div class="protocol-duration">20 min</div>
+            </div>
+            <div class="protocol-description">Specific practices to activate your parasympathetic nervous system for better sleep.</div>
+            <button class="start-protocol-btn" onclick="showScreen('physical-exercise-screen')">START</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Physical Exercise Screen -->
+      <div id="physical-exercise-screen" class="hidden">
+        <div class="exercise-screen">
+          <div class="exercise-image" style="background-image: url('https://via.placeholder.com/400x600'); background-size: cover; background-position: center;">
+            <div class="exercise-title">THORACIC EXTENSION</div>
+            <div class="exercise-description">Relieve mid-back tightness & improve upright posture</div>
+          </div>
+          
+          <div class="exercise-timer">00:57</div>
+          
+          <div class="control-buttons">
+            <button>PAUSE</button>
+            <button onclick="showScreen('morning-protocol-screen')">SKIP</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Focus Screen -->
+      <div id="focus-screen" class="hidden">
+        <div class="focus-screen">
+          <div class="focus-title">FOCUS TIME</div>
+          
+          <div class="timer">44:56</div>
+          
+          <div class="control-buttons">
+            <button>PAUSE</button>
+            <button onclick="showScreen('main-dashboard')">SKIP</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Assessment Screen -->
+      <div id="assessment-screen" class="hidden">
+        <button class="back-button" onclick="showScreen('main-dashboard')">BACK</button>
+        
+        <div class="assessment-container">
+          <div class="assessment-title">Mindful Assessment</div>
+          
+          <div class="assessment-form">
+            <div class="form-group">
+              <label>How is your energy level today?</label>
+              <div class="slider-container">
+                <input type="range" min="1" max="10" value="6" class="slider" id="energy-slider">
+                <div class="slider-labels">
+                  <span>Low</span>
+                  <span>Medium</span>
+                  <span>High</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>How is your stress level?</label>
+              <div class="slider-container">
+                <input type="range" min="1" max="10" value="7" class="slider" id="stress-slider">
+                <div class="slider-labels">
+                  <span>Low</span>
+                  <span>Medium</span>
+                  <span>High</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>How well did you sleep?</label>
+              <div class="slider-container">
+                <input type="range" min="1" max="10" value="5" class="slider" id="sleep-slider">
+                <div class="slider-labels">
+                  <span>Poor</span>
+                  <span>Fair</span>
+                  <span>Great</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Current focus area:</label>
+              <select>
+                <option>Stress reduction</option>
+                <option>Performance enhancement</option>
+                <option>Recovery optimization</option>
+                <option>Sleep improvement</option>
+                <option>Mobility development</option>
+              </select>
+            </div>
+            
+            <button class="submit-assessment" onclick="showScreen('main-dashboard')">GET RECOMMENDATIONS</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Learning Center -->
+      <div id="learning-center" class="hidden">
+        <button class="back-button" onclick="showScreen('main-dashboard')">BACK</button>
+        
+        <div class="learning-container">
+          <div class="learning-title">Learning Center</div>
+          
+          <div class="learning-categories">
+            <div class="learning-category" onclick="showScreen('breathing-info-screen')">
+              <div class="learning-category-title">Breathing</div>
+              <div class="learning-category-count">8 modules</div>
+            </div>
+            <div class="learning-category">
+              <div class="learning-category-title">Movement</div>
+              <div class="learning-category-count">12 modules</div>
+            </div>
+            <div class="learning-category">
+              <div class="learning-category-title">Recovery</div>
+              <div class="learning-category-count">6 modules</div>
+            </div>
+            <div class="learning-category">
+              <div class="learning-category-title">Mindset</div>
+              <div class="learning-category-count">9 modules</div>
+            </div>
+          </div>
+          
+          <div class="featured-module">
+            <div class="featured-module-title">The Science of Breathing</div>
+            <div class="featured-module-description">Discover how conscious breathing affects your autonomic nervous system and learn the physiological mechanisms behind effective breathwork.</div>
+            <button class="start-module-btn" onclick="showScreen('breathing-info-screen')">START LEARNING</button>
+          </div>
+          
+          <div class="featured-module">
+            <div class="featured-module-title">Foundation Movement Patterns</div>
+            <div class="featured-module-description">Master the essential movement patterns that form the building blocks of all physical activity and exercise.</div>
+            <button class="start-module-btn">START LEARNING</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Community Screen -->
+      <div id="community-screen" class="hidden">
+        <button class="back-button" onclick="showScreen('main-dashboard')">BACK</button>
+        
+        <div class="community-container">
+          <div class="community-title">Community</div>
+          
+          <div class="community-tabs">
+            <button class="community-tab active">Feed</button>
+            <button class="community-tab">Challenges</button>
+            <button class="community-tab">Events</button>
+          </div>
+          
+          <div class="community-feed">
+            <div class="post">
+              <div class="post-header">
+                <div class="post-avatar"></div>
+                <div class="post-user-info">
+                  <div class="post-username">Sarah K.</div>
+                  <div class="post-time">2 hours ago</div>
+                </div>
+              </div>
+              <div class="post-content">
+                Just completed my morning protocol for the 10th day in a row! Feeling much more mobility in my shoulders and improved energy throughout the day.
+              </div>
+              <div class="post-actions">
+                <div class="post-action">❤️ Like</div>
+                <div class="post-action">💬 Comment</div>
+                <div class="post-action">🔄 Share</div>
+              </div>
+            </div>
+            
+            <div class="post">
+              <div class="post-header">
+                <div class="post-avatar"></div>
+                <div class="post-user-info">
+                  <div class="post-username">Michael T.</div>
+                  <div class="post-time">Yesterday</div>
+                </div>
+              </div>
+              <div class="post-content">
+                The resonance breathing technique has been a game-changer for my pre-competition routine. Helped me stay calm and focused before my race this weekend!
+              </div>
+              <div class="post-actions">
+                <div class="post-action">❤️ Like</div>
+                <div class="post-action">💬 Comment</div>
+                <div class="post-action">🔄 Share</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Profile Screen -->
+      <div id="profile-screen" class="hidden">
+        <button class="back-button" onclick="showScreen('main-dashboard')">BACK</button>
+        
+        <div class="profile-container">
+          <div class="profile-header">
+            <div class="profile-avatar"></div>
+            <div class="profile-info">
+              <div class="profile-name">Alex Morgan</div>
+              <div class="profile-membership">Premium Member</div>
+            </div>
+          </div>
+          
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="stat-value">42</div>
+              <div class="stat-label">Sessions</div>
+            </div>
+            <div class="profile-stat">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Days Streak</div>
+            </div>
+            <div class="profile-stat">
+              <div class="stat-value">8</div>
+              <div class="stat-label">Hours</div>
+            </div>
+          </div>
+          
+          <div class="profile-section">
+            <div class="profile-section-title">Settings</div>
+            
+            <div class="settings-item">
+              <div class="settings-item-label">Notifications</div>
+              <div class="settings-item-value">On</div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-label">Dark Mode</div>
+              <div class="settings-item-value">Auto</div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-label">Connected Devices</div>
+              <div class="settings-item-value">1 Device</div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-label">Data Privacy</div>
+              <div class="settings-item-value">Manage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Navigation Menu -->
+    <div class="nav-menu">
+      <button class="nav-button" onclick="showScreen('main-dashboard')">
+        <div class="nav-icon">🏠</div>
+        <span>Home</span>
+      </button>
+      <button class="nav-button" onclick="showScreen('home-screen')">
+        <div class="nav-icon">🧘</div>
+        <span>Breathe</span>
+      </button>
+      <button class="nav-button" onclick="showScreen('assessment-screen')">
+        <div class="nav-icon">📋</div>
+        <span>Assessment</span>
+      </button>
+      <button class="nav-button" onclick="showScreen('learning-center')">
+        <div class="nav-icon">📚</div>
+        <span>Learn</span>
+      </button>
+      <button class="nav-button" onclick="showScreen('community-screen')">
+        <div class="nav-icon">👥</div>
+        <span>Community</span>
+      </button>
+      <button class="nav-button" onclick="showScreen('profile-screen')">
+        <div class="nav-icon">👤</div>
+        <span>Profile</span>
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Navigation between screens
+    function showScreen(screenId, technique) {
+      document.querySelectorAll('.content > div').forEach(screen => {
+        screen.classList.add('hidden');
+      });
+      document.getElementById(screenId).classList.remove('hidden');
+      
+      if (screenId === 'breathing-exercise-screen' && technique) {
+        changeBreathingTechnique(technique);
+      }
+    }
+    
+    // Breathing techniques
+    function changeBreathingTechnique(technique) {
+      const instructionElement = document.getElementById('breath-instruction');
+      const timerElement = document.getElementById('breath-timer');
+      
+      // Reset any ongoing animations
+      const breathCircle = document.querySelector('.breath-circle');
+      breathCircle.style.animation = 'none';
+      setTimeout(() => {
+        breathCircle.style.animation = '';
+      }, 10);
+      
+      // Update based on technique
+      switch(technique) {
+        case 'resonance':
+          instructionElement.textContent = 'INHALE';
+          timerElement.textContent = '5:30';
+          breathCircle.style.animation = 'breatheAnimation 10s infinite ease-in-out';
+          startBreathingSequence(['INHALE', 'EXHALE'], [5000, 5000]);
+          break;
+        case '478':
+          instructionElement.textContent = 'INHALE';
+          timerElement.textContent = '4:00';
+          breathCircle.style.animation = 'breatheAnimation 19s infinite ease-in-out';
+          startBreathingSequence(['INHALE', 'HOLD', 'EXHALE'], [4000, 7000, 8000]);
+          break;
+        case 'box':
+          instructionElement.textContent = 'INHALE';
+          timerElement.textContent = '5:00';
+          breathCircle.style.animation = 'breatheAnimation 16s infinite ease-in-out';
+          startBreathingSequence(['INHALE', 'HOLD', 'EXHALE', 'HOLD'], [4000, 4000, 4000, 4000]);
+          break;
+        case 'sighing':
+          instructionElement.textContent = 'INHALE';
+          timerElement.textContent = '3:00';
+          breathCircle.style.animation = 'breatheAnimation 8s infinite ease-in-out';
+          startBreathingSequence(['INHALE', 'INHALE AGAIN', 'EXHALE'], [2000, 2000, 4000]);
+          break;
+      }
+    }
+    
+    // Start the breathing sequence animation
+    let breathingInterval;
+    function startBreathingSequence(instructions, durations) {
+      const instructionElement = document.getElementById('breath-instruction');
+      let currentIndex = 0;
+      
+      // Clear any existing interval
+      if (breathingInterval) {
+        clearInterval(breathingInterval);
+      }
+      
+      // Set initial instruction
+      instructionElement.textContent = instructions[0];
+      
+      // Calculate total cycle time
+      const totalTime = durations.reduce((sum, time) => sum + time, 0);
+      
+      // Start the sequence
+      breathingInterval = setInterval(() => {
+        // Move to next instruction
+        currentIndex = (currentIndex + 1) % instructions.length;
+        instructionElement.textContent = instructions[currentIndex];
+        
+        // Schedule the next change
+        setTimeout(() => {
+          // This timeout is intentionally empty - the next change will happen in the interval
+        }, durations[currentIndex]);
+        
+      }, totalTime);
+    }
+    
+    // Toggle between technique and focus modes
+    function toggleTechniqueFocus() {
+      const button = event.target;
+      if (button.textContent === 'TECHNIQUE') {
+        button.textContent = 'FOCUS';
+        // Show technique UI elements
+      } else {
+        button.textContent = 'TECHNIQUE';
+        // Hide technique UI elements
+      }
+    }
+    
+    // Initialize with default screen
+    document.addEventListener('DOMContentLoaded', () => {
+      showScreen('main-dashboard');
+      
+      // Set initial progress bar values
+      document.querySelectorAll('.progress-bar-fill').forEach((bar, index) => {
+        const values = [100, 100, 85, 85, 60, 0, 0];
+        bar.style.width = values[index] + '%';
+      });
+    });
+  </script>
+</body>
+</html>
